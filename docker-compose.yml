@@ -1,0 +1,75 @@
+version: "3"
+
+networks:
+  api:
+
+services:
+
+  redis:
+    image: redis:${REDIS_VERSION}
+    container_name: redis
+    networks:
+      - api
+    volumes:
+      - ${REDIS_CONF_FILE}:/etc/redis/redis.conf:ro
+      #- ../redis/data:/data
+    command: ["redis-server", "/etc/redis/redis.conf"]
+    ports:
+      - "${REDIS_HOST_PORT}:6379"
+
+  mysql:
+    image: mysql:${MYSQL_VERSION_DEFAULT}
+    container_name: mysql
+    networks:
+      - api
+      #volumes:
+      #- ./docker/mysql/my.cnf:/etc/mysql/my.cnf:ro
+      #- ./docker/mysql/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "${MYSQL_HOST_PORT}:3306"
+
+  phpfpm:
+    image: php:${PHP_VERSION}
+    #    build:
+    #      context: ./php-fpm
+    container_name: phpfpm
+    networks:
+      - api
+    expose:
+      - 9001
+    restart: always
+    volumes:
+      - ${API_PATH}/:/data/api/:rw
+      - ${PHP_PHP_INI_FILE}:/usr/local/etc/php/php.ini:ro
+      - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php/php-fpm.conf:rw
+      - ${PHP_FPM_CONF_POOL_FILE}:/usr/local/etc/php/pool.d/:rw
+    cap_add:
+      - SYS_PTRACE
+  #    stdin_open: true
+  #    tty: true
+
+
+  #  php:
+  #    build:
+  #      context: ./services
+  #      args:
+  #        PHP_VERSION: php:${PHP_VERSION}-fpm-alpine
+  #        CONTAINER_PACKAGE_URL: ${CONTAINER_PACKAGE_URL}
+  #        PHP_EXTENSIONS: ${PHP_EXTENSIONS}
+  #        TZ: "$TZ"
+  #    container_name: php
+
+
+  nginx:
+    image: nginx:${NGINX_VERSION}
+    container_name: nginx
+    networks:
+      - api
+    volumes:
+      - ${API_PATH}/:/data/api/:rw
+      - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
+      - ${NGINX_CONF_DIR}:/etc/nginx/conf.d/:rw
+    ports:
+      - "${NGINX_PORT}:80"
