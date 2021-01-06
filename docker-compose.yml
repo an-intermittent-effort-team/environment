@@ -78,6 +78,7 @@ services:
   jenkins:
     image: jenkins/jenkins:${JENKINS_VERSION}
     container_name: jenkins
+    user: root
     networks:
       - api
     volumes:
