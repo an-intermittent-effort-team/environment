@@ -40,7 +40,7 @@ services:
       - 9001
     restart: always
     volumes:
-      - ${API_PATH}/:/data/api/:rw
+      - ${API_PATH}/:/opt/www/:rw
       - ${PHP_PHP_INI_FILE}:/usr/local/etc/php/php.ini:ro
       - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php/php-fpm.conf:rw
       - ${PHP_FPM_CONF_POOL_FILE}:/usr/local/etc/php/pool.d/:rw
