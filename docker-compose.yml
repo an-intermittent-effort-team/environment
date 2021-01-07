@@ -67,7 +67,8 @@ services:
     networks:
       - api
     volumes:
-      - ${API_PATH}/:/data/api/:rw
+      #- ${API_PATH}/:/data/api/:rw
+      - ./data/nginx/:/var/log/nginx/:rw
       - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
       - ${NGINX_CONF_DIR}:/etc/nginx/conf.d/:rw
     ports:
