@@ -22,9 +22,8 @@ services:
     container_name: mysql
     networks:
       - api
-      #volumes:
-      #- ./docker/mysql/my.cnf:/etc/mysql/my.cnf:ro
-      #- ./docker/mysql/data:/var/lib/mysql
+    #volumes:
+      #- ${MYSQL_CONF_FILE}:/etc/mysql/my.cnf:ro
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
@@ -83,8 +82,8 @@ services:
       - api
     volumes:
       - ./data/jenkins/:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker:/usr/bin/docker
+      #- /var/run/docker.sock:/var/run/docker.sock
+      #- /usr/bin/docker:/usr/bin/docker
     ports:
       - "${JENKINS_HOST_PORT}:8080"
       - "${JENKINS_HOST_SLAVE_PORT}:50000"
