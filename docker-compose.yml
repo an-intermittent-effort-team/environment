@@ -3,9 +3,10 @@ version: "3"
 networks:
   api:
 
-volumes:
-  esdata:
-    driver: local
+
+#volumes:
+#  esdata:
+#    driver: local
 
 services:
 
@@ -26,8 +27,9 @@ services:
     container_name: mysql
     networks:
       - api
-    #volumes:
-      #- ${MYSQL_CONF_FILE}:/etc/mysql/my.cnf:ro
+#      - elk
+#    volumes:
+#      - ${MYSQL_CONF_FILE}:/etc/mysql/my.cnf:ro
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
@@ -70,6 +72,7 @@ services:
     container_name: nginx
     networks:
       - api
+#      - elk
     volumes:
       - ${API_PATH}/:/opt/www/:rw
       - ./data/nginx/:/var/log/nginx/:rw
@@ -96,6 +99,8 @@ services:
   kibana:
     image: kibana:${KIBANA_VERSION}
     container_name: kibana
+#    volumes:
+#      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
     environment:
       - I18N_LOCALE=zh-CN
       - XPACK_GRAPH_ENABLED=true
@@ -107,6 +112,11 @@ services:
       - api
 
   elasticsearch:
+#    ## build方式，可以在引入镜像之后安装需要的插件
+#    build:
+#      context: elasticsearch/
+#      args:
+#        ELK_VERSION: ${ES_VERSION}
     image: elasticsearch:${ES_VERSION}
     container_name: elasticsearch
     environment:
@@ -120,19 +130,59 @@ services:
       memlock:
         soft: -1
         hard: -1
-    volumes:
-      - esdata:/usr/share/elasticsearch/data
+#    volumes:
+#      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+#      - ./data/elasticsearch:/usr/share/elasticsearch/data
     ports:
       - "${ES_HOST_PORT}:9200"
     networks:
       - api
 
-  cerebro:
-    image: lmenezes/cerebro:${CEREBRO_VERSION}
-    container_name: cerebro
-    ports:
-      - "${CEREBRO_HOST_PORT}:9800"
-    command:
-      - -Dhosts.0.host=http://elasticsearch:9200
-    networks:
-      - api
+#  logstash:
+##    ## build 方式 ，可以再镜像引入后安装需要的插件
+##    build:
+##      context: logstash/
+##      args:
+##        LOGSTASH_VERSION: ${LOGSTASH_VERSION}
+#    image: docker.elastic.co/logstash/logstash:${LOGSTASH_VERSION}
+#    container_name: logstash
+#    ports:
+#      - "5044:5044"
+#      - "5000:5000/tcp"
+#      - "5000:5000/udp"
+#      - "9600:9600"
+##    volumes:
+##      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+##      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+#    environment:
+#      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+#    networks:
+#      - elk
+#    depends_on:
+#      - elasticsearch
+
+
+#  filebeat:
+#    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
+#    container_name: filebeat
+##    volumes:
+##      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+##      - ./filebeat/logs:/usr/share/filebeat/logs
+##      - ./filebeat/mydocs:/usr/share/filebeat/mydocs
+#    environment:
+#      - TZ=Asia/Shanghai
+#    links:
+#      - logstash # 把logstash的ip记录到该容器中
+#    networks:
+#      - elk
+
+#  #无法使用，再研究一下
+#  cerebro:
+#    image: lmenezes/cerebro:${CEREBRO_VERSION}
+#    container_name: cerebro
+#    ports:
+#      - "${CEREBRO_HOST_PORT}:9800"
+#    command:
+#      - -Dhosts.0.host=http://elasticsearch:9200
+#    networks:
+#      - elk
