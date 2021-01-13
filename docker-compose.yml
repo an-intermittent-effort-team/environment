@@ -2,6 +2,7 @@ version: "3"
 
 networks:
   api:
+  elk:
 
 
 #volumes:
@@ -27,7 +28,7 @@ services:
     container_name: mysql
     networks:
       - api
-#      - elk
+      - elk
 #    volumes:
 #      - ${MYSQL_CONF_FILE}:/etc/mysql/my.cnf:ro
     environment:
@@ -72,7 +73,7 @@ services:
     container_name: nginx
     networks:
       - api
-#      - elk
+      - elk
     volumes:
       - ${API_PATH}/:/opt/www/:rw
       - ./data/nginx/:/var/log/nginx/:rw
@@ -109,7 +110,7 @@ services:
     ports:
       - "${KIBANA_HOST_PORT}:5601"
     networks:
-      - api
+      - elk
 
   elasticsearch:
 #    ## build方式，可以在引入镜像之后安装需要的插件
@@ -124,6 +125,7 @@ services:
       - node.name=es73
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "ELASTIC_PASSWORD=${ES_PASSWD}"
       - discovery.seed_hosts=es73
       - cluster.initial_master_nodes=es73
     ulimits:
@@ -136,45 +138,45 @@ services:
     ports:
       - "${ES_HOST_PORT}:9200"
     networks:
-      - api
+      - elk
 
-#  logstash:
-##    ## build 方式 ，可以再镜像引入后安装需要的插件
-##    build:
-##      context: logstash/
-##      args:
-##        LOGSTASH_VERSION: ${LOGSTASH_VERSION}
-#    image: docker.elastic.co/logstash/logstash:${LOGSTASH_VERSION}
-#    container_name: logstash
-#    ports:
-#      - "5044:5044"
-#      - "5000:5000/tcp"
-#      - "5000:5000/udp"
-#      - "9600:9600"
-##    volumes:
-##      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-##      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-#    environment:
-#      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-#    networks:
-#      - elk
-#    depends_on:
-#      - elasticsearch
+  logstash:
+#    ## build 方式 ，可以再镜像引入后安装需要的插件
+#    build:
+#      context: logstash/
+#      args:
+#        LOGSTASH_VERSION: ${LOGSTASH_VERSION}
+    image: docker.elastic.co/logstash/logstash:${LOGSTASH_VERSION}
+    container_name: logstash
+    ports:
+      - "5044:5044"
+      - "5000:5000/tcp"
+      - "5000:5000/udp"
+      - "9600:9600"
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
 
 
-#  filebeat:
-#    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
-#    container_name: filebeat
-##    volumes:
-##      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
-##      - ./filebeat/logs:/usr/share/filebeat/logs
-##      - ./filebeat/mydocs:/usr/share/filebeat/mydocs
-#    environment:
-#      - TZ=Asia/Shanghai
-#    links:
-#      - logstash # 把logstash的ip记录到该容器中
-#    networks:
-#      - elk
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
+    container_name: filebeat
+#    volumes:
+#      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+#      - ./filebeat/logs:/usr/share/filebeat/logs
+#      - ./filebeat/mydocs:/usr/share/filebeat/mydocs
+    environment:
+      - TZ=Asia/Shanghai
+    links:
+      - logstash # 把logstash的ip记录到该容器中
+    networks:
+      - elk
 
 #  #无法使用，再研究一下
 #  cerebro:
