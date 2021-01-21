@@ -23,18 +23,18 @@ services:
 #    ports:
 #      - "${REDIS_HOST_PORT}:6379"
 
-  mysql:
-    image: mysql:${MYSQL_VERSION_DEFAULT}
-    container_name: mysql
-    networks:
-      - api
-      - elk
-#    volumes:
-#      - ${MYSQL_CONF_FILE}:/etc/mysql/my.cnf:ro
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    ports:
-      - "${MYSQL_HOST_PORT}:3306"
+#  mysql:
+#    image: mysql:${MYSQL_VERSION_DEFAULT}
+#    container_name: mysql
+#    networks:
+#      - api
+#      - elk
+##    volumes:
+##      - ${MYSQL_CONF_FILE}:/etc/mysql/my.cnf:ro
+#    environment:
+#      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#    ports:
+#      - "${MYSQL_HOST_PORT}:3306"
 
   phpfpm:
     image: php:${PHP_VERSION}
@@ -173,18 +173,25 @@ services:
 
 
   filebeat:
-    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
+    build:
+      context: filebeat/
+      args:
+        FILEBEAT_VERSION: ${FILEBEAT_VERSION}
+#    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
     container_name: filebeat
-#    volumes:
-#      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
-#      - ./filebeat/logs:/usr/share/filebeat/logs
-#      - ./filebeat/mydocs:/usr/share/filebeat/mydocs
+    volumes:
+      #- ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./data/filebeat/logs:/usr/share/filebeat/logs:rw
+      - ./data/nginx/:/var/log/nginx/ # 收集nginx日志
     environment:
       - TZ=Asia/Shanghai
-    links:
-      - logstash # 把logstash的ip记录到该容器中
     networks:
       - elk
+    depends_on:
+      - kibana
+#    links:
+#      - logstash # 把logstash的ip记录到该容器中
+
 
 #  #无法使用，再研究一下
 #  cerebro:
