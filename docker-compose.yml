@@ -98,10 +98,16 @@ services:
 #      - "${JENKINS_HOST_SLAVE_PORT}:50000"
 
   kibana:
-    image: kibana:${KIBANA_VERSION}
+    ## build
+    build:
+      context: kibana/
+      args:
+        KIBANA_VERSION: $KIBANA_VERSION
+#    ## image 方式
+#    image: kibana:${KIBANA_VERSION}
     container_name: kibana
-#    volumes:
-#      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+    volumes:
+      - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
     environment:
       - I18N_LOCALE=zh-CN
       - XPACK_GRAPH_ENABLED=true
@@ -113,12 +119,13 @@ services:
       - elk
 
   elasticsearch:
-#    ## build方式，可以在引入镜像之后安装需要的插件
-#    build:
-#      context: elasticsearch/
-#      args:
-#        ELK_VERSION: ${ES_VERSION}
-    image: elasticsearch:${ES_VERSION}
+    ## build方式，可以在引入镜像之后安装需要的插件
+    build:
+      context: elasticsearch/
+      args:
+        ES_VERSION: ${ES_VERSION}
+#    ## images方式
+#    image: elasticsearch:${ES_VERSION}
     container_name: elasticsearch
     environment:
       - cluster.name=mellos
@@ -132,21 +139,22 @@ services:
       memlock:
         soft: -1
         hard: -1
-#    volumes:
-#      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-#      - ./data/elasticsearch:/usr/share/elasticsearch/data
+    volumes:
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./data/elasticsearch:/usr/share/elasticsearch/data
     ports:
       - "${ES_HOST_PORT}:9200"
     networks:
       - elk
 
   logstash:
-#    ## build 方式 ，可以再镜像引入后安装需要的插件
-#    build:
-#      context: logstash/
-#      args:
-#        LOGSTASH_VERSION: ${LOGSTASH_VERSION}
-    image: docker.elastic.co/logstash/logstash:${LOGSTASH_VERSION}
+    ## build 方式 ，可以再镜像引入后安装需要的插件
+    build:
+      context: logstash/
+      args:
+        LOGSTASH_VERSION: ${LOGSTASH_VERSION}
+#    ## image 方式
+#    image: docker.elastic.co/logstash/logstash:${LOGSTASH_VERSION}
     container_name: logstash
     ports:
       - "5044:5044"
