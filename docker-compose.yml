@@ -69,7 +69,13 @@ services:
 
 
   nginx:
-    image: nginx:${NGINX_VERSION}
+    ## build
+    build:
+      context: nginx/
+      args:
+        NGINX_VERSION: ${NGINX_VERSION}
+#   ## image 方式
+#   image: nginx:${NGINX_VERSION}
     container_name: nginx
     networks:
       - api
