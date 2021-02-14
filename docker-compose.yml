@@ -6,7 +6,7 @@ networks:
 
 
 #volumes:
-#  esdata:
+#  appdata:
 #    driver: local
 
 services:
@@ -47,7 +47,8 @@ services:
       - 9001
     restart: always
     volumes:
-      - ${API_PATH}/:/opt/www/:rw
+#      - ${API_PATH}/:/opt/www/:rw
+      - ./data/www/:/opt/www/:rw
       - ${PHP_PHP_INI_FILE}:/usr/local/etc/php/php.ini:ro
       - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php/php-fpm.conf:rw
       - ${PHP_FPM_CONF_POOL_FILE}:/usr/local/etc/php/pool.d/:rw
@@ -81,7 +82,7 @@ services:
       - api
       - elk
     volumes:
-      - ${API_PATH}/:/opt/www/:rw
+      - ./data/www/:/opt/www/:rw
       - ./data/nginx/:/var/log/nginx/:rw
       - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
       - ${NGINX_CONF_DIR}:/etc/nginx/conf.d/:rw
@@ -96,7 +97,10 @@ services:
     networks:
       - api
     volumes:
-      - ./data/jenkins/:/var/jenkins_home
+      - ./data/jenkins/logs/:/var/jenkins_home/logs/
+      - ./data/jenkins/secret/:/var/jenkins_home/secret/
+      - ./data/jenkins/workspace/:/var/jenkins_home/workspace/
+      - ./data/www/:/opt/www/
       #- /var/run/docker.sock:/var/run/docker.sock
       #- /usr/bin/docker:/usr/bin/docker
     ports:
