@@ -98,7 +98,7 @@ services:
       - api
     volumes:
       - ./data/jenkins/logs/:/var/jenkins_home/logs/
-      - ./data/jenkins/secret/:/var/jenkins_home/secret/
+      - ./data/jenkins/secrets/:/var/jenkins_home/secrets/
       - ./data/jenkins/workspace/:/var/jenkins_home/workspace/
       - ./data/www/:/opt/www/
       #- /var/run/docker.sock:/var/run/docker.sock
