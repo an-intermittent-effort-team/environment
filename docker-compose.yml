@@ -37,9 +37,11 @@ services:
       - "${MYSQL_HOST_PORT}:3306"
 
   phpfpm:
-    image: php:${PHP_VERSION}
-    #    build:
-    #      context: ./php-fpm
+#    image: php:${PHP_VERSION}
+    build:
+      context: ./php-fpm
+      args:
+        PHP_VERSION: ${PHP_VERSION}
     container_name: phpfpm
     networks:
       - api
