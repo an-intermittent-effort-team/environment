@@ -22,5 +22,10 @@ RUN curl -sS https://getcomposer.org/installer | php \
     && docker-php-ext-install -j$(nproc) bz2 \
     # redis 安装
     && pecl install redis-5.1.1 \
-    && docker-php-ext-enable redis
+    && docker-php-ext-enable redis \
+    #
+    && docker-php-ext-install pcntl \
+    #
+    && apt-get install -y --no-install-recommends libzip-dev \
+    && docker-php-ext-install -j$(nproc) zip
 
