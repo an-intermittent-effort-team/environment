@@ -52,7 +52,7 @@ services:
 #      - ${API_PATH}/:/opt/www/:rw
       - ./data/www/:/opt/www/:rw
       - ${PHP_PHP_INI_FILE}:/usr/local/etc/php/php.ini:ro
-      - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php/php-fpm.conf:rw
+      - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php-fpm.conf:rw
       - ${PHP_FPM_CONF_POOL_FILE}:/usr/local/etc/php/pool.d/:rw
     cap_add:
       - SYS_PTRACE
@@ -184,25 +184,25 @@ services:
 #      - elasticsearch
 
 
-#  filebeat:
+  filebeat:
 #    build:
 #      context: filebeat/
 #      args:
 #        FILEBEAT_VERSION: ${FILEBEAT_VERSION}
-##    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
-#    container_name: filebeat
-#    volumes:
-#      #- ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
-#      - ./data/filebeat/logs:/usr/share/filebeat/logs:rw
-#      - ./data/nginx/:/var/log/nginx/ # 收集nginx日志
-#    environment:
-#      - TZ=Asia/Shanghai
-#    networks:
-#      - elk
+    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
+    container_name: filebeat
+    volumes:
+      #- ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - ./data/filebeat/logs:/usr/share/filebeat/logs:rw
+      - ./data/nginx/:/var/log/nginx/ # 收集nginx日志
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - elk
 #    depends_on:
 #      - kibana
-##    links:
-##      - logstash # 把logstash的ip记录到该容器中
+#    links:
+#      - logstash # 把logstash的ip记录到该容器中
 
 
 #  #无法使用，再研究一下

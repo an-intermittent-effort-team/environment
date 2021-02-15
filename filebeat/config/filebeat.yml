@@ -17,12 +17,12 @@
 filebeat.inputs:
   - type: log
     paths:
-      - /var/log/nginx/access/*.log
+      - /var/log/nginx/access/*com-access.log
 #-------------------------- Elasticsearch output ------------------------------
-output.elasticsearch:
-  hosts: ["elasticsearch:9200"]
-  username: 'elastic'
-  password: '1qaz2wsx'
+#output.elasticsearch:
+#  hosts: ["elasticsearch:9200"]
+#  username: 'elastic'
+#  password: '1qaz2wsx'
 
 #============================== Kibana =====================================
 # Starting with Beats version 6.0.0, the dashboards are loaded via the Kibana API.

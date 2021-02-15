@@ -27,5 +27,6 @@ RUN curl -sS https://getcomposer.org/installer | php \
     && docker-php-ext-install pcntl \
     #
     && apt-get install -y --no-install-recommends libzip-dev \
-    && docker-php-ext-install -j$(nproc) zip
+    && docker-php-ext-install -j$(nproc) zip \
+    && apt-get install -y --no-install-recommends zip
 
