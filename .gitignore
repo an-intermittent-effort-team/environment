@@ -4,3 +4,4 @@ data/jenkins/
 data/nginx/
 data/mysql/
 data/elasticsearch/
+data/filebeat
