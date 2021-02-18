@@ -185,15 +185,15 @@ services:
 
 
   filebeat:
-    build:
-      context: filebeat/
-      args:
-        FILEBEAT_VERSION: ${FILEBEAT_VERSION}
-#    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
+#    build:
+#      context: filebeat/
+#      args:
+#        FILEBEAT_VERSION: ${FILEBEAT_VERSION}
+    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
     container_name: filebeat
     volumes:
-#      - ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:rw
-#      - ./filebeat/config/modules.d/nginx.yml:/usr/share/filebeat/modules.d/nginx.yml:rw
+      - ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:rw
+      - ./filebeat/config/modules.d/nginx.yml:/usr/share/filebeat/modules.d/nginx.yml:rw
       - ./data/filebeat/logs:/usr/share/filebeat/logs:rw
       - ./data/nginx/:/var/log/nginx/ # 收集nginx日志
     environment:
