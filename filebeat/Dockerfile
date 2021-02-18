@@ -10,4 +10,4 @@ COPY ./config/filebeat.yml /usr/share/filebeat/filebeat.yml
 COPY ./config/modules.d/nginx.yml /usr/share/filebeat/modules.d/nginx.yml
 RUN filebeat modules enable nginx \
     && chown root:root /usr/share/filebeat/filebeat.yml \
-    && chown root:root /usr/share/filebeat/modules.d/nginx.yml
+    && chown root:root /usr/share/filebeat/modules.d/nginx.yml \

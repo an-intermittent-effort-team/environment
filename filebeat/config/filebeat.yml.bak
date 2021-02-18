@@ -1,0 +1,55 @@
+filebeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    reload.enabled: true
+
+processors:
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+
+output.elasticsearch:
+  hosts: 'https://es-50zc2yad.public.tencentelasticsearch.com:9200'
+  username: 'elastic'
+  password: ''
+  indices:
+    - index: "nginx-access-%{[beat.version]}-%{+yyyy.MM}"
+      when.contains:
+        fileset.name: "access"
+    - index: "nginx-error-%{[beat.version]}-%{+yyyy.MM}"
+      when.contains:
+        fileset.name: "error"
+
+setup.template.name: "nginx"
+setup.template.pattern: "nginx-*"
+setup.template.enabled: false
+setup.template.overwrite: true
+
+
+#filebeat.inputs:
+#  - type: log
+#    paths:
+#      - /var/log/nginx/access/*com-access.log
+#-------------------------- Elasticsearch output ------------------------------
+#output.elasticsearch:
+#  hosts: ["elasticsearch:9200"]
+#  username: 'elastic'
+#  password: '1qaz2wsx'
+
+#filebeat.config.modules:
+#  path: ${path.config}/modules.d/*.yml
+#  reload.enabled: true
+#
+#output.elasticsearch:
+#  hosts: ["127.0.0.1:9200"]
+#  indices:
+#    - index: "nginx-access-%{[beat.version]}-%{+yyyy.MM}"
+#      when.contains:
+#        fileset.name: "access"
+#    - index: "nginx-error-%{[beat.version]}-%{+yyyy.MM}"
+#      when.contains:
+#        fileset.name: "error"
+#
+#setup.template.name: "nginx"
+#setup.template.pattern: "nginx-*"
+#setup.template.enabled: false
+#setup.template.overwrite: true
