@@ -10,6 +10,7 @@ USER root
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     && chmod -R 777 /usr/local/bin/composer \
+    && composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/ \
     # 扩展
     && docker-php-ext-install -j$(nproc) bcmath calendar exif gettext sockets dba mysqli pcntl pdo_mysql shmop sysvmsg sysvsem sysvshm \
     # gd 安装
