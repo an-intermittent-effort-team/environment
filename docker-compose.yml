@@ -4,11 +4,6 @@ networks:
   api:
   elk:
 
-
-#volumes:
-#  appdata:
-#    driver: local
-
 services:
 
   redis:
@@ -18,7 +13,7 @@ services:
       - api
     volumes:
       - ${REDIS_CONF_FILE}:/etc/redis/redis.conf:ro
-      #- ../redis/data:/data
+      - ${DATA_PATH}/redis/:/data/:rw
     command: ["redis-server", "/etc/redis/redis.conf"]
     ports:
       - "${REDIS_HOST_PORT}:6379"
@@ -31,6 +26,7 @@ services:
       - elk
 #    volumes:
 #      - ${MYSQL_CONF_FILE}:/etc/mysql/my.cnf:ro
+#      - ${DATA_PATH}/mysql/:/var/lib/mysql/:rw
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
@@ -49,8 +45,7 @@ services:
       - 9001
     restart: always
     volumes:
-#      - ${API_PATH}/:/opt/www/:rw
-      - ./data/www/:/opt/www/:rw
+      - ${WWW_PATH}:/opt/www/:rw
       - ${PHP_PHP_INI_FILE}:/usr/local/etc/php/php.ini:ro
       - ${PHP_FPM_CONF_FILE}:/usr/local/etc/php-fpm.conf:rw
       - ${PHP_FPM_CONF_POOL_FILE}:/usr/local/etc/php/pool.d/:rw
@@ -84,8 +79,8 @@ services:
       - api
       - elk
     volumes:
-      - ./data/www/:/opt/www/:rw
-      - ./data/nginx/:/var/log/nginx/:rw
+      - ${WWW_PATH}:/opt/www/:rw
+      - ${DATA_PATH}/nginx/:/var/log/nginx/:rw
       - ${NGINX_CONF_FILE}:/etc/nginx/nginx.conf:ro
       - ${NGINX_CONF_DIR}:/etc/nginx/conf.d/:rw
     ports:
@@ -99,10 +94,10 @@ services:
     networks:
       - api
     volumes:
-      - ./data/jenkins/logs/:/var/jenkins_home/logs/
-      - ./data/jenkins/secrets/:/var/jenkins_home/secrets/
-      - ./data/jenkins/workspace/:/var/jenkins_home/workspace/
-      - ./data/www/:/opt/www/
+      - ${DATA_PATH}/jenkins/logs/:/var/jenkins_home/logs/
+      - ${DATA_PATH}/jenkins/secrets/:/var/jenkins_home/secrets/
+      - ${DATA_PATH}/jenkins/workspace/:/var/jenkins_home/workspace/
+      - ${WWW_PATH}:/opt/www/
       #- /var/run/docker.sock:/var/run/docker.sock
       #- /usr/bin/docker:/usr/bin/docker
     ports:
@@ -184,26 +179,26 @@ services:
 #      - elasticsearch
 
 
-  filebeat:
-    build:
-      context: filebeat/
-      args:
-        FILEBEAT_VERSION: ${FILEBEAT_VERSION}
-#    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
-    container_name: filebeat
-    volumes:
-      - ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:rw
-      - ./filebeat/config/modules.d/nginx.yml:/usr/share/filebeat/modules.d/nginx.yml:rw
-      - ./data/filebeat/logs:/usr/share/filebeat/logs:rw
-      - ./data/nginx/:/var/log/nginx/ # 收集nginx日志
-    environment:
-      - TZ=Asia/Shanghai
-    networks:
-      - elk
-#    depends_on:
-#      - kibana
-#    links:
-#      - logstash # 把logstash的ip记录到该容器中
+#  filebeat:
+#    build:
+#      context: filebeat/
+#      args:
+#        FILEBEAT_VERSION: ${FILEBEAT_VERSION}
+##    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
+#    container_name: filebeat
+#    volumes:
+#      - ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:rw
+#      - ./filebeat/config/modules.d/nginx.yml:/usr/share/filebeat/modules.d/nginx.yml:rw
+#      - ${DATA_PATH}/filebeat/logs:/usr/share/filebeat/logs:rw
+#      - ${DATA_PATH}/nginx/:/var/log/nginx/ # 收集nginx日志
+#    environment:
+#      - TZ=Asia/Shanghai
+#    networks:
+#      - elk
+##    depends_on:
+##      - kibana
+##    links:
+##      - logstash # 把logstash的ip记录到该容器中
 
 
 #  #无法使用，再研究一下

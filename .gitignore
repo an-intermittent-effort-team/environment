@@ -5,3 +5,4 @@ data/nginx/
 data/mysql/
 data/elasticsearch/
 data/filebeat
+data/redis/
