@@ -179,26 +179,24 @@ services:
 #      - elasticsearch
 
 
-  filebeat:
-    build:
-      context: filebeat/
-      args:
-        FILEBEAT_VERSION: ${FILEBEAT_VERSION}
-#    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
-    container_name: filebeat
-    volumes:
-      - ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:rw
-      - ./filebeat/config/modules.d/nginx.yml:/usr/share/filebeat/modules.d/nginx.yml:rw
-      - ${DATA_PATH}/filebeat/logs:/usr/share/filebeat/logs:rw
-      - ${DATA_PATH}/nginx/:/var/log/nginx/ # 收集nginx日志
-    environment:
-      - TZ=Asia/Shanghai
-    networks:
-      - elk
-#    depends_on:
-#      - kibana
-#    links:
-#      - logstash # 把logstash的ip记录到该容器中
+### ES线上云服务欠费 关闭filebeat
+#  filebeat:
+#    build:
+#      context: filebeat/
+#      args:
+#        FILEBEAT_VERSION: ${FILEBEAT_VERSION}
+##    image: docker.elastic.co/beats/filebeat:${FILEBEAT_VERSION}
+#    container_name: filebeat
+#    volumes:
+#      - ./filebeat/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:rw
+#      - ./filebeat/config/modules.d/nginx.yml:/usr/share/filebeat/modules.d/nginx.yml:rw
+#      - ${DATA_PATH}/filebeat/logs:/usr/share/filebeat/logs:rw
+#      - ${DATA_PATH}/nginx/:/var/log/nginx/ # 收集nginx日志
+#    environment:
+#      - TZ=Asia/Shanghai
+#    networks:
+#      - elk
+
 
 
 #  #无法使用，再研究一下
